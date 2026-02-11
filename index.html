@@ -454,18 +454,36 @@ document.querySelectorAll('.reveal, .hero-preview').forEach(el => observer.obser
 setTimeout(animateCounter, 800);
 
 // Email submit handler
-function handleSubmit() {
-  const email = document.getElementById('email-input').value;
+async function handleSubmit() {
+  const input = document.getElementById('email-input');
   const note = document.getElementById('cta-note');
-  if (!email || !email.includes('@')) {
+  const email = input.value.trim();
+  if (!email || !email.includes('@') || !email.includes('.')) {
     note.textContent = 'Please enter a valid email address.';
     note.style.color = 'var(--rd)';
     return;
   }
-  note.textContent = '✓ You\'re on the list! We\'ll be in touch soon.';
-  note.style.color = 'var(--em)';
-  document.getElementById('email-input').value = '';
-  document.getElementById('email-input').placeholder = 'Added!';
+  note.textContent = 'Submitting...';
+  note.style.color = 'var(--t3)';
+  try {
+    const res = await fetch('https://formspree.io/f/mkovobzg', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email, source: 'taxiq-landing' })
+    });
+    if (res.ok) {
+      note.textContent = '✓ You\'re on the list! We\'ll be in touch soon.';
+      note.style.color = 'var(--em)';
+      input.value = '';
+      input.placeholder = 'Added!';
+    } else {
+      note.textContent = 'Something went wrong. Please try again.';
+      note.style.color = 'var(--rd)';
+    }
+  } catch {
+    note.textContent = 'Connection error. Please try again.';
+    note.style.color = 'var(--rd)';
+  }
 }
 </script>
 </body>
