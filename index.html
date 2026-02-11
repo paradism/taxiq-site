@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaxIQ — Tax Intelligence for Complex Filers</title>
+<meta name="description" content="See your total tax liability across salary, investments, crypto, and freelance income in 30 seconds. 50-state engine. AI-powered.">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #07090D; --s1: #0C0F15; --s2: #12161E; --s3: #1A1F2A;
+  --bd: rgba(255,255,255,0.06); --em: #34D399; --emd: #10B981; --emg: rgba(52,211,153,0.08);
+  --t1: #F1F5F9; --t2: #94A3B8; --t3: #64748B; --t4: #475569;
+  --rd: #FB7185; --yl: #FBBF24; --bl: #60A5FA; --pu: #A78BFA;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--t2); font-family: 'Outfit', sans-serif; overflow-x: hidden; line-height: 1.6; }
+.fm { font-family: 'JetBrains Mono', monospace; }
+.serif { font-family: 'Instrument Serif', serif; }
+
+/* ─── Noise texture overlay ─── */
+body::before { content: ''; position: fixed; inset: 0; z-index: 0; opacity: 0.03; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* ─── Glow orbs ─── */
+.orb { position: absolute; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+.orb-1 { width: 600px; height: 600px; background: rgba(52,211,153,0.06); top: -200px; left: -100px; }
+.orb-2 { width: 500px; height: 500px; background: rgba(96,165,250,0.04); top: 200px; right: -150px; }
+.orb-3 { width: 400px; height: 400px; background: rgba(167,139,250,0.04); bottom: -100px; left: 30%; }
+
+/* ─── Container ─── */
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+
+/* ─── Nav ─── */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 16px 0; backdrop-filter: blur(20px); background: rgba(7,9,13,0.8); border-bottom: 1px solid var(--bd); }
+nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, var(--em), var(--emd)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: var(--bg); }
+.logo-text { color: var(--t1); font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a { color: var(--t3); text-decoration: none; font-size: 13.5px; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: var(--t1); }
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 22px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.25s; text-decoration: none; border: none; }
+.btn-primary { background: var(--em); color: var(--bg); }
+.btn-primary:hover { background: var(--emd); transform: translateY(-1px); box-shadow: 0 8px 30px rgba(52,211,153,0.2); }
+.btn-ghost { background: transparent; border: 1px solid var(--bd); color: var(--t2); }
+.btn-ghost:hover { border-color: var(--em); color: var(--em); }
+
+/* ─── Hero ─── */
+.hero { padding: 160px 0 80px; text-align: center; position: relative; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 100px; background: var(--emg); border: 1px solid rgba(52,211,153,0.12); color: var(--em); font-size: 12.5px; font-weight: 600; margin-bottom: 28px; animation: fadeUp 0.8s ease both; }
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--em); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 { font-size: clamp(42px, 6vw, 72px); font-weight: 800; color: var(--t1); line-height: 1.08; letter-spacing: -0.035em; margin-bottom: 24px; animation: fadeUp 0.8s 0.1s ease both; }
+.hero h1 .em { color: var(--em); }
+.hero h1 .serif { font-style: italic; font-weight: 400; }
+.hero-sub { font-size: 18px; color: var(--t3); max-width: 560px; margin: 0 auto 40px; line-height: 1.65; animation: fadeUp 0.8s 0.2s ease both; }
+.hero-cta { display: flex; gap: 12px; justify-content: center; animation: fadeUp 0.8s 0.3s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Hero Dashboard Preview ─── */
+.hero-preview { margin-top: 64px; position: relative; animation: fadeUp 1s 0.5s ease both; }
+.preview-glow { position: absolute; inset: -40px; background: radial-gradient(ellipse at center, rgba(52,211,153,0.08) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+.preview-frame { position: relative; z-index: 1; background: var(--s1); border: 1px solid var(--bd); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03) inset; }
+.preview-bar { height: 40px; background: var(--s2); border-bottom: 1px solid var(--bd); display: flex; align-items: center; padding: 0 14px; gap: 7px; }
+.preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-dot:nth-child(1) { background: #FF5F57; }
+.preview-dot:nth-child(2) { background: #FEBC2E; }
+.preview-dot:nth-child(3) { background: #28C840; }
+.preview-content { padding: 32px 40px 40px; }
+.preview-label { color: var(--t4); font-size: 13px; margin-bottom: 8px; }
+.preview-hero-num { font-family: 'JetBrains Mono', monospace; font-size: 52px; font-weight: 700; color: var(--t1); letter-spacing: -0.03em; }
+.preview-breakdown { display: flex; gap: 24px; margin-top: 12px; }
+.preview-breakdown span { color: var(--t4); font-size: 13px; }
+.preview-breakdown strong { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+.preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 28px; }
+.preview-card { background: var(--s2); border: 1px solid var(--bd); border-radius: 10px; padding: 14px 16px; }
+.preview-card-label { color: var(--t4); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 4px; }
+.preview-card-val { font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 700; }
+.preview-insights { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+.preview-insight { background: var(--s2); border: 1px solid var(--bd); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-left: 3px solid var(--em); }
+.preview-insight.warn { border-left-color: var(--rd); }
+.preview-insight.info { border-left-color: var(--bl); }
+.preview-insight-text { font-size: 12.5px; color: var(--t2); }
+.preview-insight-text strong { color: var(--t1); font-weight: 600; }
+
+/* ─── Problem ─── */
+.problem { padding: 80px 0; }
+.problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.problem-text h2 { font-size: 36px; font-weight: 700; color: var(--t1); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
+.problem-text p { color: var(--t3); font-size: 16px; line-height: 1.7; margin-bottom: 16px; }
+.pain-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.pain-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; background: var(--s2); border: 1px solid var(--bd); border-radius: 12px; }
+.pain-icon { font-size: 20px; flex-shrink: 0; line-height: 1; }
+.pain-item h4 { color: var(--t1); font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.pain-item p { color: var(--t4); font-size: 12.5px; line-height: 1.5; }
+
+/* ─── Features ─── */
+.features { padding: 80px 0; }
+.section-label { display: inline-flex; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: var(--emg); color: var(--em); margin-bottom: 16px; }
+.section-title { font-size: 36px; font-weight: 700; color: var(--t1); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 12px; }
+.section-sub { color: var(--t3); font-size: 16px; max-width: 520px; margin-bottom: 48px; }
+.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.feat-card { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; padding: 28px 24px; transition: all 0.3s; position: relative; overflow: hidden; }
+.feat-card:hover { border-color: rgba(52,211,153,0.2); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+.feat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--em), transparent); opacity: 0; transition: opacity 0.3s; }
+.feat-card:hover::before { opacity: 1; }
+.feat-icon { font-size: 28px; margin-bottom: 16px; display: block; }
+.feat-card h3 { color: var(--t1); font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.feat-card p { color: var(--t4); font-size: 13px; line-height: 1.6; }
+.feat-chip { display: inline-flex; padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: 600; margin-top: 12px; font-family: 'JetBrains Mono', monospace; }
+
+/* ─── How It Works ─── */
+.how { padding: 80px 0; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: step; }
+.step { position: relative; padding: 32px 24px; background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; counter-increment: step; }
+.step::before { content: counter(step); position: absolute; top: -14px; left: 24px; width: 28px; height: 28px; border-radius: 8px; background: var(--em); color: var(--bg); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.step h3 { color: var(--t1); font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 6px; }
+.step p { color: var(--t4); font-size: 13px; line-height: 1.6; }
+.step-time { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 5px; background: var(--emg); color: var(--em); font-size: 10.5px; font-weight: 600; margin-top: 12px; font-family: 'JetBrains Mono', monospace; }
+
+/* ─── State Map Teaser ─── */
+.states { padding: 80px 0; }
+.states-showcase { background: var(--s1); border: 1px solid var(--bd); border-radius: 16px; padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.states-left h3 { color: var(--t1); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+.states-left p { color: var(--t3); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+.state-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.state-pill { padding: 8px 16px; border-radius: 8px; background: var(--s2); border: 1px solid var(--bd); color: var(--t2); font-size: 13px; font-weight: 500; transition: all 0.2s; cursor: default; }
+.state-pill.zero { border-color: rgba(52,211,153,0.2); color: var(--em); }
+.state-pill.zero::after { content: ' $0'; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; }
+.states-right { text-align: center; }
+.state-compare { display: flex; align-items: center; justify-content: center; gap: 20px; }
+.state-box { padding: 20px; background: var(--s2); border-radius: 12px; border: 1px solid var(--bd); min-width: 140px; }
+.state-box .name { color: var(--t3); font-size: 12px; margin-bottom: 4px; }
+.state-box .amount { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; }
+.state-arrow { color: var(--t4); font-size: 24px; }
+.state-savings { margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; color: var(--em); }
+.state-savings-label { color: var(--t3); font-size: 13px; margin-top: 4px; }
+
+/* ─── Trust ─── */
+.trust { padding: 60px 0; }
+.trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.trust-item { text-align: center; padding: 24px 16px; }
+.trust-num { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; color: var(--em); }
+.trust-label { color: var(--t4); font-size: 12.5px; margin-top: 4px; }
+
+/* ─── CTA ─── */
+.cta { padding: 80px 0 60px; text-align: center; }
+.cta-box { background: var(--s1); border: 1px solid var(--bd); border-radius: 20px; padding: 56px 40px; position: relative; overflow: hidden; }
+.cta-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--em), transparent); }
+.cta-glow { position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 500px; height: 400px; background: radial-gradient(ellipse, rgba(52,211,153,0.06), transparent 70%); pointer-events: none; }
+.cta h2 { font-size: 32px; font-weight: 700; color: var(--t1); letter-spacing: -0.02em; margin-bottom: 12px; position: relative; }
+.cta p { color: var(--t3); font-size: 15px; margin-bottom: 28px; position: relative; }
+.email-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; position: relative; }
+.email-form input { flex: 1; padding: 13px 18px; border-radius: 10px; border: 1px solid var(--bd); background: var(--s2); color: var(--t1); font-family: 'Outfit', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+.email-form input:focus { border-color: var(--em); }
+.email-form input::placeholder { color: var(--t4); }
+.email-form .btn { padding: 13px 28px; flex-shrink: 0; }
+.cta-note { color: var(--t4); font-size: 11.5px; margin-top: 14px; position: relative; }
+
+/* ─── Footer ─── */
+footer { padding: 40px 0; border-top: 1px solid var(--bd); }
+footer .wrap { display: flex; justify-content: space-between; align-items: center; }
+footer p { color: var(--t4); font-size: 12px; }
+footer a { color: var(--t3); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+footer a:hover { color: var(--em); }
+.footer-links { display: flex; gap: 24px; }
+
+/* ─── Scroll Reveals ─── */
+.reveal { opacity: 0; transform: translateY(24px); transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .problem-grid, .states-showcase { grid-template-columns: 1fr; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .trust-grid { grid-template-columns: 1fr 1fr; }
+  .preview-grid { grid-template-columns: 1fr 1fr; }
+  .preview-content { padding: 20px; }
+  .preview-hero-num { font-size: 36px; }
+  .hero h1 { font-size: 36px; }
+  .nav-links a:not(.btn) { display: none; }
+  .email-form { flex-direction: column; }
+  .state-compare { flex-direction: column; gap: 10px; }
+  .state-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="wrap">
+    <a href="#" class="logo"><div class="logo-mark">T</div><span class="logo-text">TaxIQ</span></a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#states">States</a>
+      <a href="#cta" class="btn btn-primary">Get Early Access</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-badge"><span class="dot"></span> Now in early access</div>
+    <h1>Know what you <span class="em">owe.</span><br>Keep what you <span class="serif">earned.</span></h1>
+    <p class="hero-sub">TaxIQ shows your complete tax picture across salary, investments, crypto, and freelance income — then finds every legal way to lower it.</p>
+    <div class="hero-cta">
+      <a href="#cta" class="btn btn-primary">Get Early Access</a>
+      <a href="#features" class="btn btn-ghost">See Features</a>
+    </div>
+
+    <!-- Dashboard Preview -->
+    <div class="hero-preview">
+      <div class="preview-glow"></div>
+      <div class="preview-frame">
+        <div class="preview-bar"><div class="preview-dot"></div><div class="preview-dot"></div><div class="preview-dot"></div></div>
+        <div class="preview-content">
+          <div class="preview-label">Estimated total tax liability</div>
+          <div class="preview-hero-num" id="hero-counter">$0</div>
+          <div class="preview-breakdown">
+            <span>Federal <strong class="fm" style="color:var(--t1)">$31,847</strong></span>
+            <span>California <strong class="fm" style="color:var(--yl)">$14,290</strong></span>
+            <span>SE Tax <strong class="fm" style="color:var(--pu)">$3,532</strong></span>
+            <span>NIIT <strong class="fm" style="color:var(--rd)">$1,482</strong></span>
+          </div>
+          <div class="preview-grid">
+            <div class="preview-card"><div class="preview-card-label">Portfolio</div><div class="preview-card-val" style="color:var(--t1)">$347,280</div></div>
+            <div class="preview-card"><div class="preview-card-label">LT Gains</div><div class="preview-card-val" style="color:var(--em)">$24,150</div></div>
+            <div class="preview-card"><div class="preview-card-label">Harvestable</div><div class="preview-card-val" style="color:var(--em)">$4,820</div></div>
+            <div class="preview-card"><div class="preview-card-label">Eff. Rate</div><div class="preview-card-val" style="color:var(--bl)">23.1%</div></div>
+          </div>
+          <div class="preview-insights">
+            <div class="preview-insight"><span style="font-size:15px">🌾</span><div class="preview-insight-text"><strong>Save ~$4,820 by harvesting losses</strong> — 6 positions with unrealized losses across stocks and crypto.</div></div>
+            <div class="preview-insight warn"><span style="font-size:15px">⚠️</span><div class="preview-insight-text"><strong>2 crypto wash sales detected</strong> — $3,400 in deductions at risk.</div></div>
+            <div class="preview-insight info"><span style="font-size:15px">✈️</span><div class="preview-insight-text"><strong>California costs $14,290/yr</strong> — Compare zero-tax states.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Problem -->
+<section class="problem">
+  <div class="wrap">
+    <div class="problem-grid reveal">
+      <div class="problem-text">
+        <h2>Tax season shouldn't<br>feel like <span style="color:var(--rd)">guessing.</span></h2>
+        <p>You earned well this year — W-2, side hustle, investments, maybe some crypto. Now you're staring at a pile of 1099s, wondering what you owe and whether you're leaving money on the table.</p>
+        <p>TurboTax asks you 200 questions. Your CPA charges $500/hr. Neither tells you <em>proactively</em> how to pay less.</p>
+      </div>
+      <ul class="pain-list">
+        <li class="pain-item"><span class="pain-icon">😰</span><div><h4>"What do I actually owe?"</h4><p>Multiple income sources, different tax treatments, state taxes on top. The number feels like a black box.</p></div></li>
+        <li class="pain-item"><span class="pain-icon">💸</span><div><h4>"Am I paying too much?"</h4><p>You know strategies exist — loss harvesting, retirement optimization, entity structures. You just don't know which apply to you.</p></div></li>
+        <li class="pain-item"><span class="pain-icon">📋</span><div><h4>"What forms do I need?"</h4><p>FBAR? 8938? Schedule C? The compliance maze is real, and penalties for getting it wrong are brutal.</p></div></li>
+        <li class="pain-item"><span class="pain-icon">🏃</span><div><h4>"Should I move to Texas?"</h4><p>You've heard zero-tax states save a fortune. But how much exactly, with your income and gains?</p></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">Everything in one place.</h2>
+      <p class="section-sub">TaxIQ combines what usually takes a CPA, a tax calculator, and a financial planner into one intelligent dashboard.</p>
+    </div>
+    <div class="feat-grid reveal">
+      <div class="feat-card">
+        <span class="feat-icon">⚡</span>
+        <h3>Total Tax Picture</h3>
+        <p>One number — your total liability across federal, state, self-employment, NIIT, and capital gains. Updated in real time as you edit your profile.</p>
+        <div class="feat-chip" style="background:var(--emg);color:var(--em)">ALL INCOME TYPES</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🌾</span>
+        <h3>Tax-Loss Harvesting</h3>
+        <p>Scans your portfolio for unrealized losses across stocks and crypto. Shows exact dollar savings at your marginal rate. Detects wash sales automatically.</p>
+        <div class="feat-chip" style="background:rgba(251,113,133,0.08);color:var(--rd)">STOCKS + CRYPTO</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">📊</span>
+        <h3>50-State Engine</h3>
+        <p>Complete tax structures for all 50 states + DC. Compare your current state to any other. See exactly how much you'd save by relocating.</p>
+        <div class="feat-chip" style="background:rgba(96,165,250,0.08);color:var(--bl)">51 JURISDICTIONS</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">💰</span>
+        <h3>Deduction Finder</h3>
+        <p>401(k), IRA, HSA, QBI, home office, charitable giving via DAF — each strategy modeled with your specific marginal rate and savings.</p>
+        <div class="feat-chip" style="background:rgba(167,139,250,0.08);color:var(--pu)">6+ STRATEGIES</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">📋</span>
+        <h3>Compliance Checklists</h3>
+        <p>FATCA, FBAR, CRS, estimated payments, filing requirements. Step-by-step guided checklists with deadlines and penalty warnings.</p>
+        <div class="feat-chip" style="background:rgba(251,191,36,0.08);color:var(--yl)">PENALTIES SHOWN</div>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">💬</span>
+        <h3>AI Tax Advisor</h3>
+        <p>Ask questions in plain English. Get risk-rated advice personalized to your profile. Research mode for rules, advisory mode for your situation.</p>
+        <div class="feat-chip" style="background:var(--emg);color:var(--em)">PROFILE-AWARE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">30 seconds to clarity.</h2>
+      <p class="section-sub">No signup forms. No uploading documents. Just answer three questions and see your full tax picture.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <h3>Enter your profile</h3>
+        <p>Income sources, state, filing status, retirement contributions. Takes under a minute. Everything recalculates instantly.</p>
+        <span class="step-time">⏱ ~30 sec</span>
+      </div>
+      <div class="step">
+        <h3>See your tax picture</h3>
+        <p>One dashboard: total liability, federal vs. state breakdown, effective rate, NIIT, self-employment tax. Plus actionable insights.</p>
+        <span class="step-time">⚡ Instant</span>
+      </div>
+      <div class="step">
+        <h3>Find your savings</h3>
+        <p>Loss harvesting opportunities, deduction strategies, state comparison, and an AI advisor — all personalized to your situation.</p>
+        <span class="step-time">💰 $$$</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- State Comparison -->
+<section class="states" id="states">
+  <div class="wrap reveal">
+    <div class="states-showcase">
+      <div class="states-left">
+        <div class="section-label">State Taxes</div>
+        <h3>What would you save<br>by relocating?</h3>
+        <p>TaxIQ models your exact income against all 50 states. Not generic brackets — your actual tax bill with your capital gains, freelance income, and deductions.</p>
+        <div class="state-pills">
+          <span class="state-pill zero">Texas</span>
+          <span class="state-pill zero">Florida</span>
+          <span class="state-pill zero">Nevada</span>
+          <span class="state-pill zero">Wyoming</span>
+          <span class="state-pill zero">Tennessee</span>
+          <span class="state-pill zero">Alaska</span>
+          <span class="state-pill zero">S. Dakota</span>
+          <span class="state-pill">California 13.3%</span>
+          <span class="state-pill">New York 10.9%</span>
+          <span class="state-pill">New Jersey 10.75%</span>
+        </div>
+      </div>
+      <div class="states-right">
+        <div class="state-compare">
+          <div class="state-box"><div class="name">California</div><div class="amount fm" style="color:var(--rd)">$14,290</div></div>
+          <div class="state-arrow">→</div>
+          <div class="state-box"><div class="name">Texas</div><div class="amount fm" style="color:var(--em)">$0</div></div>
+        </div>
+        <div class="state-savings">+$14,290</div>
+        <div class="state-savings-label">saved per year in state taxes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Numbers -->
+<section class="trust">
+  <div class="wrap reveal">
+    <div class="trust-grid">
+      <div class="trust-item"><div class="trust-num">51</div><div class="trust-label">State jurisdictions modeled</div></div>
+      <div class="trust-item"><div class="trust-num">4</div><div class="trust-label">Filing statuses supported</div></div>
+      <div class="trust-item"><div class="trust-num">6+</div><div class="trust-label">Tax-saving strategies</div></div>
+      <div class="trust-item"><div class="trust-num">30s</div><div class="trust-label">To see your tax picture</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <div class="wrap">
+    <div class="cta-box reveal">
+      <div class="cta-glow"></div>
+      <h2>Stop guessing. Start saving.</h2>
+      <p>Join the waitlist for early access to TaxIQ. Free during beta.</p>
+      <div class="email-form">
+        <input type="email" placeholder="you@email.com" id="email-input">
+        <button class="btn btn-primary" onclick="handleSubmit()">Get Early Access</button>
+      </div>
+      <p class="cta-note" id="cta-note">No spam. We'll notify you when your spot is ready.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="wrap">
+    <p>© 2026 TaxIQ. For informational purposes only — not tax advice.</p>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="mailto:hello@taxiq.app">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hero counter animation
+function animateCounter() {
+  const target = 51151;
+  const el = document.getElementById('hero-counter');
+  const duration = 2000;
+  const start = performance.now();
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 4);
+    const current = Math.round(target * eased);
+    el.textContent = '$' + current.toLocaleString();
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      if (entry.target.closest('.hero-preview')) animateCounter();
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal, .hero-preview').forEach(el => observer.observe(el));
+
+// Trigger hero counter on load
+setTimeout(animateCounter, 800);
+
+// Email submit handler
+function handleSubmit() {
+  const email = document.getElementById('email-input').value;
+  const note = document.getElementById('cta-note');
+  if (!email || !email.includes('@')) {
+    note.textContent = 'Please enter a valid email address.';
+    note.style.color = 'var(--rd)';
+    return;
+  }
+  note.textContent = '✓ You\'re on the list! We\'ll be in touch soon.';
+  note.style.color = 'var(--em)';
+  document.getElementById('email-input').value = '';
+  document.getElementById('email-input').placeholder = 'Added!';
+}
+</script>
+</body>
+</html>
